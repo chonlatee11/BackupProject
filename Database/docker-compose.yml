@@ -1,0 +1,35 @@
+version: "3"
+services:
+  db:
+    container_name: mariadb
+    image: "mariadb"
+    restart: 'always'
+    volumes: 
+      - ./db:/var/lib/mysql/
+      # - /var/lib/mysql/logs:${MARIADB_LOG_DIR}
+      #- /var/docker/mariadb/conf:/etc/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
+      MYSQL_DATABASE: "${MYSQL_DATABASE}"
+      MYSQL_USER: "${MYSQL_USER}"
+      MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
+    networks:
+      - db
+    ports:
+      - 3306:3306
+
+  phpmyadmin:
+      image: 'phpmyadmin/phpmyadmin:latest'
+      container_name: phpmyadmin
+      restart: always
+      ports:
+        - 8080:80
+      networks:
+        - db
+      environment:
+        - MYSQL_USER=${MYSQL_USER}
+        - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+        - PMA_HOST = db
+networks:
+  db:
+    driver: bridge
